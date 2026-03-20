@@ -73,14 +73,7 @@ const targetInput = document.getElementById('targetTime');
 const targetPreview = document.getElementById('targetPreview');
 
 targetInput.addEventListener('input', () => {
-  let val = targetInput.value.replace(/\D/g, '');
-
-  // 4桁入力時に現在のUTC時(hh)を先頭に自動補完
-  if (val.length === 4) {
-    const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
-    val = utcHour + val;
-  }
-
+  const val = targetInput.value.replace(/\D/g, '');
   targetInput.value = val;
   const sec = parseHHMMSS(val.padStart(6, '0'));
   if (sec !== null && val.length === 6) {
@@ -89,6 +82,15 @@ targetInput.addEventListener('input', () => {
     targetPreview.textContent = '—';
   }
   saveState();
+});
+
+/** SETボタン: 4桁入力時に現在のUTC時(hh)を先頭に補完 */
+document.getElementById('setUtcHour').addEventListener('click', () => {
+  const val = targetInput.value.replace(/\D/g, '');
+  if (val.length !== 4) return;
+  const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+  targetInput.value = utcHour + val;
+  targetInput.dispatchEvent(new Event('input'));
 });
 
 // ── Memory slot ───────────────────────────────────────────
