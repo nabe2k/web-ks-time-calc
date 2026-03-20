@@ -73,7 +73,14 @@ const targetInput = document.getElementById('targetTime');
 const targetPreview = document.getElementById('targetPreview');
 
 targetInput.addEventListener('input', () => {
-  const val = targetInput.value.replace(/\D/g, '');
+  let val = targetInput.value.replace(/\D/g, '');
+
+  // 4桁入力時に現在のUTC時(hh)を先頭に自動補完
+  if (val.length === 4) {
+    const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+    val = utcHour + val;
+  }
+
   targetInput.value = val;
   const sec = parseHHMMSS(val.padStart(6, '0'));
   if (sec !== null && val.length === 6) {
