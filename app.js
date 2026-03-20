@@ -84,6 +84,16 @@ targetInput.addEventListener('input', () => {
   saveState();
 });
 
+/** SETボタン: 4桁入力時に現在のUTC時(hh)を先頭に補完 */
+document.getElementById('setUtcHour').addEventListener('click', () => {
+  const val = targetInput.value.replace(/\D/g, '');
+  if (val.length !== 4) return;
+  const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+  targetInput.value = utcHour + val;
+  targetInput.dispatchEvent(new Event('input'));
+  targetInput.focus();
+});
+
 // ── Memory slot ───────────────────────────────────────────
 
 /** 指定スロットのデータで画面を復元する */
