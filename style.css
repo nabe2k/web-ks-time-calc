@@ -185,6 +185,47 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   color: #fff;
 }
 
+/* Memory slot bar */
+.slot-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  box-shadow: var(--shadow);
+}
+.slot-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+.slot-buttons {
+  display: flex;
+  gap: 6px;
+}
+.slot-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: none;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.slot-btn:hover { background: var(--bg); }
+.slot-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 .calc-area {
   display: flex;
   justify-content: center;
