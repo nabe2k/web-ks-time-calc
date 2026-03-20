@@ -311,6 +311,24 @@ document.getElementById('calculate').addEventListener('click', () => {
   results.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
+// ── ヘルプモーダル ────────────────────────────────────────
+
+const helpModal = document.getElementById('helpModal');
+document.getElementById('helpBody').innerHTML = HELP_CONTENT;
+
+document.getElementById('helpBtn').addEventListener('click', () => {
+  helpModal.classList.remove('hidden');
+});
+document.getElementById('helpClose').addEventListener('click', () => {
+  helpModal.classList.add('hidden');
+});
+helpModal.addEventListener('click', (e) => {
+  if (e.target === helpModal) helpModal.classList.add('hidden');
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') helpModal.classList.add('hidden');
+});
+
 // ── Copy to clipboard ─────────────────────────────────────
 
 document.querySelectorAll('.btn-copy').forEach(btn => {
