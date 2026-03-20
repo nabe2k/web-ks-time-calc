@@ -127,6 +127,71 @@ document.getElementById('slotButtons').addEventListener('click', (e) => {
 updateSlotButtons(currentSlot);
 restoreState(currentSlot);
 
+// ── Memory アクション ─────────────────────────────────────
+
+const SLOT_COUNT = 5;
+
+/** 個別リセット: 現在のスロットを消去して初期化 */
+document.getElementById('resetSlot').addEventListener('click', () => {
+  if (!confirm(`Memory ${currentSlot} をリセットしますか？`)) return;
+  localStorage.removeItem(getStorageKey(currentSlot));
+  restoreState(currentSlot);
+});
+
+/** 全体リセット: 全スロットを消去 */
+document.getElementById('resetAll').addEventListener('click', () => {
+  if (!confirm('全てのMemoryデータを消去しますか？\nこの操作は元に戻せません。')) return;
+  for (let i = 1; i <= SLOT_COUNT; i++) {
+    localStorage.removeItem(getStorageKey(i));
+  }
+  restoreState(currentSlot);
+});
+
+/** エクスポート: 全スロットをJSONファイルとしてダウンロード */
+document.getElementById('exportData').addEventListener('click', () => {
+  const slots = {};
+  for (let i = 1; i <= SLOT_COUNT; i++) {
+    slots[i] = loadState(i);
+  }
+  const json = JSON.stringify({ version: 1, slots }, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ks-time-calc-memory-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+/** インポート: JSONファイルを読み込んで全スロットを復元 */
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.version !== 1 || typeof data.slots !== 'object') {
+        alert('対応していないファイル形式です。');
+        return;
+      }
+      if (!confirm('現在の全Memoryデータを上書きしますか？')) return;
+      for (let i = 1; i <= SLOT_COUNT; i++) {
+        if (data.slots[i]) {
+          localStorage.setItem(getStorageKey(i), JSON.stringify(data.slots[i]));
+        } else {
+          localStorage.removeItem(getStorageKey(i));
+        }
+      }
+      restoreState(currentSlot);
+    } catch {
+      alert('ファイルの読み込みに失敗しました。');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
 // ── Calculation ───────────────────────────────────────────
 
 /** 参加者データを読み取る */
