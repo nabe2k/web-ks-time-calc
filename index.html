@@ -11,7 +11,19 @@
     <header>
       <h1>多段集結 時刻計算ツール</h1>
       <p class="subtitle">複数プレイヤーの同時着弾出兵時刻を計算</p>
+      <button id="helpBtn" class="btn-help" title="ヘルプ">?</button>
     </header>
+
+    <!-- ヘルプモーダル -->
+    <div id="helpModal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>使い方</h2>
+          <button id="helpClose" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body" id="helpBody"></div>
+      </div>
+    </div>
 
     <div class="slot-bar">
       <span class="slot-label">Memory</span>
@@ -126,6 +138,7 @@
     </section>
   </div>
 
+  <script src="help.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
