@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多段集結 時刻計算ツール</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>多段集結 時刻計算ツール</h1>
+      <p class="subtitle">複数プレイヤーの同時着弾出兵時刻を計算</p>
+    </header>
+
+    <section class="card">
+      <h2>ターゲット時刻（UTC）</h2>
+      <div class="target-row">
+        <input
+          type="text"
+          id="targetTime"
+          class="target-input"
+          placeholder="133645"
+          maxlength="6"
+          inputmode="numeric"
+        >
+        <span class="target-preview" id="targetPreview">—</span>
+      </div>
+      <p class="hint">hhmmss 形式（例: 133645 → 13:36:45）</p>
+    </section>
+
+    <section class="card">
+      <h2>参加者リスト</h2>
+      <div class="table-wrap">
+        <table id="participantsTable">
+          <thead>
+            <tr>
+              <th>名前</th>
+              <th>行軍時間（秒）</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="participantRows"></tbody>
+        </table>
+      </div>
+      <button id="addRow" class="btn btn-outline">＋ 参加者を追加</button>
+    </section>
+
+    <div class="calc-area">
+      <button id="calculate" class="btn btn-primary">計　算</button>
+    </div>
+
+    <section id="results" class="hidden">
+      <div class="result-block green">
+        <div class="result-header">
+          <div>
+            <h3>弾着時刻合わせ</h3>
+            <p class="result-desc">全員が同じ時刻 <span class="arrival-label" id="arrival1">—</span> に着弾</p>
+          </div>
+          <button class="btn btn-copy" data-target="copy1">コピー</button>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead><tr><th>名前</th><th>行軍(秒)</th><th>出兵時刻</th></tr></thead>
+            <tbody id="tbody1"></tbody>
+          </table>
+        </div>
+        <textarea class="copy-text" id="copy1" readonly></textarea>
+      </div>
+
+      <div class="result-block blue">
+        <div class="result-header">
+          <div>
+            <h3>出発時刻合わせ（最大基準）</h3>
+            <p class="result-desc">最長行軍者がTに出発、全員 <span class="arrival-label" id="arrival2">—</span> に着弾</p>
+          </div>
+          <button class="btn btn-copy" data-target="copy2">コピー</button>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead><tr><th>名前</th><th>行軍(秒)</th><th>出兵時刻</th></tr></thead>
+            <tbody id="tbody2"></tbody>
+          </table>
+        </div>
+        <textarea class="copy-text" id="copy2" readonly></textarea>
+      </div>
+
+      <div class="result-block yellow">
+        <div class="result-header">
+          <div>
+            <h3>出発時刻合わせ（最小基準）</h3>
+            <p class="result-desc">最短行軍者がTに出発、全員 <span class="arrival-label" id="arrival3">—</span> に着弾</p>
+          </div>
+          <button class="btn btn-copy" data-target="copy3">コピー</button>
+        </div>
+        <div class="table-wrap">
+          <table class="result-table">
+            <thead><tr><th>名前</th><th>行軍(秒)</th><th>出兵時刻</th></tr></thead>
+            <tbody id="tbody3"></tbody>
+          </table>
+        </div>
+        <textarea class="copy-text" id="copy3" readonly></textarea>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
