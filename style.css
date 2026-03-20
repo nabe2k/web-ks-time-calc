@@ -189,7 +189,8 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
 .slot-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
   margin-top: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -225,6 +226,38 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   border-color: var(--primary);
   color: #fff;
 }
+.slot-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.slot-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.btn-action {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: none;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-action:hover { background: var(--bg); }
+.btn-danger {
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+.btn-danger:hover { background: #fef2f2; }
 
 .calc-area {
   display: flex;

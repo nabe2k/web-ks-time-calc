@@ -22,6 +22,16 @@
         <button class="slot-btn" data-slot="4">4</button>
         <button class="slot-btn" data-slot="5">5</button>
       </div>
+      <div class="slot-divider"></div>
+      <div class="slot-actions">
+        <button id="resetSlot" class="btn btn-action" title="このMemoryをリセット">リセット</button>
+        <button id="exportData" class="btn btn-action" title="全Memoryを書き出し">書き出し</button>
+        <label class="btn btn-action" title="Memoryを読み込み">
+          読み込み
+          <input type="file" id="importFile" accept=".json" hidden>
+        </label>
+        <button id="resetAll" class="btn btn-action btn-danger" title="全Memoryを消去">全消去</button>
+      </div>
     </div>
 
     <section class="card">
