@@ -91,6 +91,7 @@ document.getElementById('setUtcHour').addEventListener('click', () => {
   const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
   targetInput.value = utcHour + val;
   targetInput.dispatchEvent(new Event('input'));
+  targetInput.focus();
 });
 
 // ── Memory slot ───────────────────────────────────────────
