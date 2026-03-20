@@ -325,6 +325,9 @@ document.getElementById('helpClose').addEventListener('click', () => {
 helpModal.addEventListener('click', (e) => {
   if (e.target === helpModal) helpModal.classList.add('hidden');
 });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') helpModal.classList.add('hidden');
+});
 
 // ── Copy to clipboard ─────────────────────────────────────
 
