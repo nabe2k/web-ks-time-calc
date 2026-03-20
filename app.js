@@ -24,22 +24,25 @@ function formatSeconds(totalSec) {
 
 // ── localStorage ─────────────────────────────────────────
 
-const STORAGE_KEY = 'ks-time-calc';
+const SLOT_KEY = 'ks-time-calc-slot';
+const getStorageKey = (slot) => `ks-time-calc-${slot}`;
+
+let currentSlot = parseInt(localStorage.getItem(SLOT_KEY) || '1', 10);
 
 function saveState() {
   const participants = Array.from(tbody.querySelectorAll('tr')).map(tr => ({
     name: tr.querySelector('.p-name').value,
     march: tr.querySelector('.p-march').value,
   }));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+  localStorage.setItem(getStorageKey(currentSlot), JSON.stringify({
     targetTime: targetInput.value,
     participants,
   }));
 }
 
-function loadState() {
+function loadState(slot) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return JSON.parse(localStorage.getItem(getStorageKey(slot)));
   } catch {
     return null;
   }
@@ -62,16 +65,6 @@ function addRow(name = '', march = '') {
   tbody.appendChild(tr);
 }
 
-// 保存済みデータがあれば復元、なければ初期行を追加
-const saved = loadState();
-if (saved?.participants?.length > 0) {
-  saved.participants.forEach(p => addRow(p.name, p.march));
-} else {
-  addRow('', '');
-  addRow('', '');
-  addRow('', '');
-}
-
 document.getElementById('addRow').addEventListener('click', () => { addRow(); saveState(); });
 
 // ── Target time preview ───────────────────────────────────
@@ -91,11 +84,48 @@ targetInput.addEventListener('input', () => {
   saveState();
 });
 
-// ターゲット時刻を復元
-if (saved?.targetTime) {
-  targetInput.value = saved.targetTime;
+// ── Memory slot ───────────────────────────────────────────
+
+/** 指定スロットのデータで画面を復元する */
+function restoreState(slot) {
+  tbody.innerHTML = '';
+  document.getElementById('results').classList.add('hidden');
+
+  const saved = loadState(slot);
+  if (saved?.participants?.length > 0) {
+    saved.participants.forEach(p => addRow(p.name, p.march));
+  } else {
+    addRow('', '');
+    addRow('', '');
+    addRow('', '');
+  }
+
+  targetInput.value = saved?.targetTime ?? '';
   targetInput.dispatchEvent(new Event('input'));
 }
+
+/** スロットボタンのアクティブ状態を更新する */
+function updateSlotButtons(slot) {
+  document.querySelectorAll('.slot-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.slot, 10) === slot);
+  });
+}
+
+document.getElementById('slotButtons').addEventListener('click', (e) => {
+  const btn = e.target.closest('.slot-btn');
+  if (!btn) return;
+  const newSlot = parseInt(btn.dataset.slot, 10);
+  if (newSlot === currentSlot) return;
+  saveState();
+  currentSlot = newSlot;
+  localStorage.setItem(SLOT_KEY, currentSlot);
+  updateSlotButtons(currentSlot);
+  restoreState(currentSlot);
+});
+
+// 初期ロード
+updateSlotButtons(currentSlot);
+restoreState(currentSlot);
 
 // ── Calculation ───────────────────────────────────────────
 
@@ -144,7 +174,6 @@ document.getElementById('calculate').addEventListener('click', () => {
   const minMarch = marchTimes.length > 0 ? Math.min(...marchTimes) : 0;
 
   // ── パターン1: 弾着時刻合わせ ──
-  // 出兵時刻 = T - 自分の行軍時間（空は対象外）
   const rows1 = participants.map(p => ({
     name: p.name,
     march: p.march,
@@ -152,8 +181,6 @@ document.getElementById('calculate').addEventListener('click', () => {
   }));
 
   // ── パターン2: 出発時刻合わせ 最大基準 ──
-  // 出兵時刻 = T + (max_march - 自分の行軍時間)
-  // 行軍時間が空の場合は 0 として扱う（T + max_march）
   const rows2 = participants.map(p => {
     const m = p.march !== null ? p.march : 0;
     return {
@@ -164,7 +191,6 @@ document.getElementById('calculate').addEventListener('click', () => {
   });
 
   // ── パターン3: 出発時刻合わせ 最小基準 ──
-  // 出兵時刻 = T - (自分の行軍時間 - min_march)（空は対象外）
   const rows3 = participants.map(p => ({
     name: p.name,
     march: p.march,
@@ -224,7 +250,6 @@ document.querySelectorAll('.btn-copy').forEach(btn => {
         btn.classList.remove('copied');
       }, 2000);
     }).catch(() => {
-      // フォールバック: テキストエリアを一時的に表示してコピー
       const ta = document.getElementById(targetId);
       ta.style.display = 'block';
       ta.select();
