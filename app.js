@@ -22,6 +22,29 @@ function formatSeconds(totalSec) {
   return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
 }
 
+// ── localStorage ─────────────────────────────────────────
+
+const STORAGE_KEY = 'ks-time-calc';
+
+function saveState() {
+  const participants = Array.from(tbody.querySelectorAll('tr')).map(tr => ({
+    name: tr.querySelector('.p-name').value,
+    march: tr.querySelector('.p-march').value,
+  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    targetTime: targetInput.value,
+    participants,
+  }));
+}
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY));
+  } catch {
+    return null;
+  }
+}
+
 // ── Participant table ─────────────────────────────────────
 
 const tbody = document.getElementById('participantRows');
@@ -33,16 +56,23 @@ function addRow(name = '', march = '') {
     <td><input type="number" class="p-march" placeholder="秒" min="1" value="${march}"></td>
     <td><button class="btn-delete" title="削除">✕</button></td>
   `;
-  tr.querySelector('.btn-delete').addEventListener('click', () => tr.remove());
+  tr.querySelector('.btn-delete').addEventListener('click', () => { tr.remove(); saveState(); });
+  tr.querySelector('.p-name').addEventListener('input', saveState);
+  tr.querySelector('.p-march').addEventListener('input', saveState);
   tbody.appendChild(tr);
 }
 
-// 初期行
-addRow('', '');
-addRow('', '');
-addRow('', '');
+// 保存済みデータがあれば復元、なければ初期行を追加
+const saved = loadState();
+if (saved?.participants?.length > 0) {
+  saved.participants.forEach(p => addRow(p.name, p.march));
+} else {
+  addRow('', '');
+  addRow('', '');
+  addRow('', '');
+}
 
-document.getElementById('addRow').addEventListener('click', () => addRow());
+document.getElementById('addRow').addEventListener('click', () => { addRow(); saveState(); });
 
 // ── Target time preview ───────────────────────────────────
 
@@ -58,7 +88,14 @@ targetInput.addEventListener('input', () => {
   } else {
     targetPreview.textContent = '—';
   }
+  saveState();
 });
+
+// ターゲット時刻を復元
+if (saved?.targetTime) {
+  targetInput.value = saved.targetTime;
+  targetInput.dispatchEvent(new Event('input'));
+}
 
 // ── Calculation ───────────────────────────────────────────
 
@@ -149,8 +186,6 @@ document.getElementById('calculate').addEventListener('click', () => {
   fillTable(document.getElementById('tbody3'), rows3);
 
   // ── コピー用テキスト生成 ──
-  const targetStr = formatSeconds(T);
-
   const copyText1 = [
     `【弾着合わせ】着弾: ${arrivalTime1}`,
     ...rows1.map(r => `${r.name}: ${r.departure ?? '—'}`),
