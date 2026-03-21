@@ -39,6 +39,39 @@ function formatSeconds(totalSec) {
   return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
 }
 
+// ── UI helpers ────────────────────────────────────────────
+
+/** mmss 入力欄にリアルタイムプレビューをバインドする */
+function bindMmssPreview(input, previewId) {
+  const preview = document.getElementById(previewId);
+  input.addEventListener('input', () => {
+    const val = input.value.replace(/\D/g, '');
+    input.value = val;
+    const sec = val.length === 4 ? parseMMSS(val) : null;
+    preview.textContent = sec !== null ? formatMMSS(sec) : '—';
+  });
+}
+
+/** hhmmss 入力欄にリアルタイムプレビューと SET ボタンをバインドする */
+function bindUtcInput(inputId, previewId, setBtnId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('input', () => {
+    const val = input.value.replace(/\D/g, '');
+    input.value = val;
+    const sec = val.length === 6 ? parseHHMMSS(val) : null;
+    preview.textContent = sec !== null ? formatSeconds(sec) : '—';
+  });
+  document.getElementById(setBtnId).addEventListener('click', () => {
+    const val = input.value.replace(/\D/g, '');
+    if (val.length !== 4) return;
+    const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+    input.value = utcHour + val;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  });
+}
+
 // ── localStorage ─────────────────────────────────────────
 
 const SLOT_KEY = 'ks-time-calc-slot';
@@ -87,29 +120,10 @@ document.getElementById('addRow').addEventListener('click', () => { addRow(); sa
 // ── Target time preview ───────────────────────────────────
 
 const targetInput = document.getElementById('targetTime');
-const targetPreview = document.getElementById('targetPreview');
 
-targetInput.addEventListener('input', () => {
-  const val = targetInput.value.replace(/\D/g, '');
-  targetInput.value = val;
-  const sec = parseHHMMSS(val.padStart(6, '0'));
-  if (sec !== null && val.length === 6) {
-    targetPreview.textContent = formatSeconds(sec);
-  } else {
-    targetPreview.textContent = '—';
-  }
-  saveState();
-});
-
-/** SETボタン: 4桁入力時に現在のUTC時(hh)を先頭に補完 */
-document.getElementById('setUtcHour').addEventListener('click', () => {
-  const val = targetInput.value.replace(/\D/g, '');
-  if (val.length !== 4) return;
-  const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
-  targetInput.value = utcHour + val;
-  targetInput.dispatchEvent(new Event('input'));
-  targetInput.focus();
-});
+bindUtcInput('targetTime', 'targetPreview', 'setUtcHour');
+// saveState を追加でバインド
+targetInput.addEventListener('input', saveState);
 
 // ── Memory slot ───────────────────────────────────────────
 
@@ -352,54 +366,28 @@ const enemyBaseInput = document.getElementById('enemyBaseTime');
 const enemyRallyInput = document.getElementById('enemyRallyTime');
 const enemyMarchInput = document.getElementById('enemyMarchTime');
 
-function bindMmssPreview(input, previewId) {
-  const preview = document.getElementById(previewId);
-  input.addEventListener('input', () => {
-    const val = input.value.replace(/\D/g, '');
-    input.value = val;
-    const sec = parseMMSS(val.padStart(4, '0'));
-    preview.textContent = (sec !== null && val.length === 4) ? formatMMSS(sec) : '—';
-  });
-}
-
-enemyBaseInput.addEventListener('input', () => {
-  const val = enemyBaseInput.value.replace(/\D/g, '');
-  enemyBaseInput.value = val;
-  const sec = parseHHMMSS(val.padStart(6, '0'));
-  document.getElementById('enemyBasePreview').textContent =
-    (sec !== null && val.length === 6) ? formatSeconds(sec) : '—';
-});
-
-document.getElementById('enemySetUtc').addEventListener('click', () => {
-  const val = enemyBaseInput.value.replace(/\D/g, '');
-  if (val.length !== 4) return;
-  const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
-  enemyBaseInput.value = utcHour + val;
-  enemyBaseInput.dispatchEvent(new Event('input'));
-  enemyBaseInput.focus();
-});
-
+bindUtcInput('enemyBaseTime', 'enemyBasePreview', 'enemySetUtc');
 bindMmssPreview(enemyRallyInput, 'enemyRallyPreview');
 bindMmssPreview(enemyMarchInput, 'enemyMarchPreview');
 
 document.getElementById('enemyCalculate').addEventListener('click', () => {
   const baseVal = enemyBaseInput.value.replace(/\D/g, '');
-  const T = parseHHMMSS(baseVal.padStart(6, '0'));
-  if (T === null || baseVal.length !== 6) {
+  const T = baseVal.length === 6 ? parseHHMMSS(baseVal) : null;
+  if (T === null) {
     alert('計算元UTCを正しく入力してください（例: 133645）');
     return;
   }
 
   const rallyVal = enemyRallyInput.value.replace(/\D/g, '');
-  const rally = parseMMSS(rallyVal.padStart(4, '0'));
-  if (rally === null || rallyVal.length !== 4) {
+  const rally = rallyVal.length === 4 ? parseMMSS(rallyVal) : null;
+  if (rally === null) {
     alert('集結時間を正しく入力してください（例: 3000）');
     return;
   }
 
   const marchVal = enemyMarchInput.value.replace(/\D/g, '');
-  const march = parseMMSS(marchVal.padStart(4, '0'));
-  if (march === null || marchVal.length !== 4) {
+  const march = marchVal.length === 4 ? parseMMSS(marchVal) : null;
+  if (march === null) {
     alert('行軍時間を正しく入力してください（例: 1545）');
     return;
   }
@@ -421,25 +409,6 @@ document.getElementById('enemyCopyToTarget').addEventListener('click', () => {
 
 // ── 相手行軍時間算出 ──────────────────────────────────────
 
-function bindUtcInput(inputId, previewId, setBtnId) {
-  const input = document.getElementById(inputId);
-  const preview = document.getElementById(previewId);
-  input.addEventListener('input', () => {
-    const val = input.value.replace(/\D/g, '');
-    input.value = val;
-    const sec = parseHHMMSS(val.padStart(6, '0'));
-    preview.textContent = (sec !== null && val.length === 6) ? formatSeconds(sec) : '—';
-  });
-  document.getElementById(setBtnId).addEventListener('click', () => {
-    const val = input.value.replace(/\D/g, '');
-    if (val.length !== 4) return;
-    const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
-    input.value = utcHour + val;
-    input.dispatchEvent(new Event('input'));
-    input.focus();
-  });
-}
-
 bindUtcInput('marchStep1Utc', 'marchStep1UtcPreview', 'marchStep1SetUtc');
 bindUtcInput('marchStep2Utc', 'marchStep2UtcPreview', 'marchStep2SetUtc');
 bindMmssPreview(document.getElementById('marchStep1Rally'), 'marchStep1RallyPreview');
@@ -447,29 +416,29 @@ bindMmssPreview(document.getElementById('marchStep2March'), 'marchStep2MarchPrev
 
 document.getElementById('enemyMarchCalculate').addEventListener('click', () => {
   const utc1Val = document.getElementById('marchStep1Utc').value.replace(/\D/g, '');
-  const T1 = parseHHMMSS(utc1Val.padStart(6, '0'));
-  if (T1 === null || utc1Val.length !== 6) {
+  const T1 = utc1Val.length === 6 ? parseHHMMSS(utc1Val) : null;
+  if (T1 === null) {
     alert('①のUTC（集結時間取得時刻）を正しく入力してください（例: 133645）');
     return;
   }
 
   const rallyVal = document.getElementById('marchStep1Rally').value.replace(/\D/g, '');
-  const rally = parseMMSS(rallyVal.padStart(4, '0'));
-  if (rally === null || rallyVal.length !== 4) {
+  const rally = rallyVal.length === 4 ? parseMMSS(rallyVal) : null;
+  if (rally === null) {
     alert('①の集結時間を正しく入力してください（例: 3000）');
     return;
   }
 
   const utc2Val = document.getElementById('marchStep2Utc').value.replace(/\D/g, '');
-  const T2 = parseHHMMSS(utc2Val.padStart(6, '0'));
-  if (T2 === null || utc2Val.length !== 6) {
+  const T2 = utc2Val.length === 6 ? parseHHMMSS(utc2Val) : null;
+  if (T2 === null) {
     alert('②のUTC（行軍時間取得時刻）を正しく入力してください（例: 140000）');
     return;
   }
 
   const marchVal = document.getElementById('marchStep2March').value.replace(/\D/g, '');
-  const march = parseMMSS(marchVal.padStart(4, '0'));
-  if (march === null || marchVal.length !== 4) {
+  const march = marchVal.length === 4 ? parseMMSS(marchVal) : null;
+  if (march === null) {
     alert('②の行軍時間（ゲーム表示）を正しく入力してください（例: 1545）');
     return;
   }
