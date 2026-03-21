@@ -2,6 +2,23 @@
 
 // ── Utility ──────────────────────────────────────────────
 
+/** "mmss" 文字列 → 秒（数値）。不正な場合は null を返す */
+function parseMMSS(str) {
+  const s = str.trim();
+  if (!/^\d{4}$/.test(s)) return null;
+  const m = parseInt(s.slice(0, 2), 10);
+  const sec = parseInt(s.slice(2, 4), 10);
+  if (sec > 59) return null;
+  return m * 60 + sec;
+}
+
+/** 秒数を "MM:SS" 形式に変換 */
+function formatMMSS(totalSec) {
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
 /** "hhmmss" 文字列 → 秒（数値）。不正な場合は null を返す */
 function parseHHMMSS(str) {
   const s = str.trim();
@@ -327,6 +344,79 @@ helpModal.addEventListener('click', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') helpModal.classList.add('hidden');
+});
+
+// ── 相手着弾計算 ───────────────────────────────────────────
+
+const enemyBaseInput = document.getElementById('enemyBaseTime');
+const enemyRallyInput = document.getElementById('enemyRallyTime');
+const enemyMarchInput = document.getElementById('enemyMarchTime');
+
+function bindMmssPreview(input, previewId) {
+  const preview = document.getElementById(previewId);
+  input.addEventListener('input', () => {
+    const val = input.value.replace(/\D/g, '');
+    input.value = val;
+    const sec = parseMMSS(val.padStart(4, '0'));
+    preview.textContent = (sec !== null && val.length === 4) ? formatMMSS(sec) : '—';
+  });
+}
+
+enemyBaseInput.addEventListener('input', () => {
+  const val = enemyBaseInput.value.replace(/\D/g, '');
+  enemyBaseInput.value = val;
+  const sec = parseHHMMSS(val.padStart(6, '0'));
+  document.getElementById('enemyBasePreview').textContent =
+    (sec !== null && val.length === 6) ? formatSeconds(sec) : '—';
+});
+
+document.getElementById('enemySetUtc').addEventListener('click', () => {
+  const val = enemyBaseInput.value.replace(/\D/g, '');
+  if (val.length !== 4) return;
+  const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+  enemyBaseInput.value = utcHour + val;
+  enemyBaseInput.dispatchEvent(new Event('input'));
+  enemyBaseInput.focus();
+});
+
+bindMmssPreview(enemyRallyInput, 'enemyRallyPreview');
+bindMmssPreview(enemyMarchInput, 'enemyMarchPreview');
+
+document.getElementById('enemyCalculate').addEventListener('click', () => {
+  const baseVal = enemyBaseInput.value.replace(/\D/g, '');
+  const T = parseHHMMSS(baseVal.padStart(6, '0'));
+  if (T === null || baseVal.length !== 6) {
+    alert('計算元UTCを正しく入力してください（例: 133645）');
+    return;
+  }
+
+  const rallyVal = enemyRallyInput.value.replace(/\D/g, '');
+  const rally = parseMMSS(rallyVal.padStart(4, '0'));
+  if (rally === null || rallyVal.length !== 4) {
+    alert('集結時間を正しく入力してください（例: 3000）');
+    return;
+  }
+
+  const marchVal = enemyMarchInput.value.replace(/\D/g, '');
+  const march = parseMMSS(marchVal.padStart(4, '0'));
+  if (march === null || marchVal.length !== 4) {
+    alert('行軍時間を正しく入力してください（例: 1545）');
+    return;
+  }
+
+  const landing = formatSeconds(T + rally + march);
+  document.getElementById('enemyResultTime').textContent = landing;
+  const resultEl = document.getElementById('enemyResult');
+  resultEl.classList.remove('hidden');
+});
+
+document.getElementById('enemyCopyToTarget').addEventListener('click', () => {
+  const time = document.getElementById('enemyResultTime').textContent;
+  // "HH:MM:SS" → "HHMMSS"
+  targetInput.value = time.replace(/:/g, '');
+  targetInput.dispatchEvent(new Event('input'));
+  targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  targetInput.focus();
 });
 
 // ── Copy to clipboard ─────────────────────────────────────

@@ -136,6 +136,68 @@
         <textarea class="copy-text" id="copy3" readonly></textarea>
       </div>
     </section>
+
+    <section class="card" id="enemyCalcSection">
+      <h2>相手の着弾時刻を計算</h2>
+      <div class="enemy-form">
+        <div class="enemy-field">
+          <label class="field-label">計算元UTC</label>
+          <div class="target-row">
+            <input
+              type="text"
+              id="enemyBaseTime"
+              class="target-input"
+              placeholder="133645"
+              maxlength="6"
+              inputmode="numeric"
+            >
+            <button id="enemySetUtc" class="btn btn-set" title="4桁入力時に現在のUTC時を補完">SET</button>
+            <span class="target-preview" id="enemyBasePreview">—</span>
+          </div>
+          <p class="hint">hhmmss 形式（例: 133645 → 13:36:45）</p>
+        </div>
+        <div class="enemy-inputs-row">
+          <div class="enemy-field">
+            <label class="field-label">集結時間</label>
+            <div class="mmss-row">
+              <input
+                type="text"
+                id="enemyRallyTime"
+                class="mmss-input"
+                placeholder="3000"
+                maxlength="4"
+                inputmode="numeric"
+              >
+              <span class="mmss-preview" id="enemyRallyPreview">—</span>
+            </div>
+            <p class="hint">mmss 形式（例: 3000 → 30分00秒）</p>
+          </div>
+          <div class="enemy-field">
+            <label class="field-label">行軍時間</label>
+            <div class="mmss-row">
+              <input
+                type="text"
+                id="enemyMarchTime"
+                class="mmss-input"
+                placeholder="1545"
+                maxlength="4"
+                inputmode="numeric"
+              >
+              <span class="mmss-preview" id="enemyMarchPreview">—</span>
+            </div>
+            <p class="hint">mmss 形式（例: 1545 → 15分45秒）</p>
+          </div>
+        </div>
+      </div>
+      <div class="calc-area">
+        <button id="enemyCalculate" class="btn btn-primary">計　算</button>
+      </div>
+      <div id="enemyResult" class="enemy-result hidden">
+        <p class="enemy-result-label">着弾時刻（UTC）</p>
+        <p class="enemy-result-time" id="enemyResultTime">—</p>
+        <button id="enemyCopyToTarget" class="btn btn-outline enemy-copy-btn">ターゲット時刻にセット</button>
+      </div>
+    </section>
   </div>
 
   <script src="help.js"></script>
