@@ -196,7 +196,7 @@ header h1 {
   transition: border-color .15s;
 }
 .target-input:focus { border-color: var(--primary); }
-.btn-set {
+.btn.btn-set {
   padding: 8px 14px;
   font-size: .85rem;
   font-weight: 700;
@@ -208,7 +208,7 @@ header h1 {
   transition: background .15s, color .15s;
   flex-shrink: 0;
 }
-.btn-set:hover { background: var(--primary); color: #fff; }
+.btn.btn-set:hover { background: var(--primary); color: #fff; }
 
 .target-preview {
   font-size: 1.5rem;
@@ -492,8 +492,14 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   font-weight: 600;
   margin-bottom: 4px;
 }
+.enemy-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 .enemy-copy-btn {
-  margin-top: 12px;
   font-size: .85rem;
   padding: 8px 16px;
 }
@@ -503,6 +509,35 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   font-weight: 700;
   color: var(--primary);
   letter-spacing: 2px;
+}
+
+/* Enemy march calc */
+#enemyMarchCalcSection { margin-top: 32px; }
+.march-step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+.step-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+.step-result {
+  font-size: .85rem;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+.step-result-value {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
 }
 
 /* Mobile adjustments */
