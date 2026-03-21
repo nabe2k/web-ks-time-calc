@@ -419,6 +419,82 @@ document.getElementById('enemyCopyToTarget').addEventListener('click', () => {
   targetInput.focus();
 });
 
+// ── 相手行軍時間算出 ──────────────────────────────────────
+
+function bindUtcInput(inputId, previewId, setBtnId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('input', () => {
+    const val = input.value.replace(/\D/g, '');
+    input.value = val;
+    const sec = parseHHMMSS(val.padStart(6, '0'));
+    preview.textContent = (sec !== null && val.length === 6) ? formatSeconds(sec) : '—';
+  });
+  document.getElementById(setBtnId).addEventListener('click', () => {
+    const val = input.value.replace(/\D/g, '');
+    if (val.length !== 4) return;
+    const utcHour = String(new Date().getUTCHours()).padStart(2, '0');
+    input.value = utcHour + val;
+    input.dispatchEvent(new Event('input'));
+    input.focus();
+  });
+}
+
+bindUtcInput('marchStep1Utc', 'marchStep1UtcPreview', 'marchStep1SetUtc');
+bindUtcInput('marchStep2Utc', 'marchStep2UtcPreview', 'marchStep2SetUtc');
+bindMmssPreview(document.getElementById('marchStep1Rally'), 'marchStep1RallyPreview');
+bindMmssPreview(document.getElementById('marchStep2March'), 'marchStep2MarchPreview');
+
+document.getElementById('enemyMarchCalculate').addEventListener('click', () => {
+  const utc1Val = document.getElementById('marchStep1Utc').value.replace(/\D/g, '');
+  const T1 = parseHHMMSS(utc1Val.padStart(6, '0'));
+  if (T1 === null || utc1Val.length !== 6) {
+    alert('①のUTC（集結時間取得時刻）を正しく入力してください（例: 133645）');
+    return;
+  }
+
+  const rallyVal = document.getElementById('marchStep1Rally').value.replace(/\D/g, '');
+  const rally = parseMMSS(rallyVal.padStart(4, '0'));
+  if (rally === null || rallyVal.length !== 4) {
+    alert('①の集結時間を正しく入力してください（例: 3000）');
+    return;
+  }
+
+  const utc2Val = document.getElementById('marchStep2Utc').value.replace(/\D/g, '');
+  const T2 = parseHHMMSS(utc2Val.padStart(6, '0'));
+  if (T2 === null || utc2Val.length !== 6) {
+    alert('②のUTC（行軍時間取得時刻）を正しく入力してください（例: 140000）');
+    return;
+  }
+
+  const marchVal = document.getElementById('marchStep2March').value.replace(/\D/g, '');
+  const march = parseMMSS(marchVal.padStart(4, '0'));
+  if (march === null || marchVal.length !== 4) {
+    alert('②の行軍時間（ゲーム表示）を正しく入力してください（例: 1545）');
+    return;
+  }
+
+  const marchStartSec = (T1 + rally) % 86400;
+  const arrivalSec = (T2 + march) % 86400;
+  const marchTimeSec = ((arrivalSec - marchStartSec) + 86400) % 86400;
+
+  document.getElementById('marchStartTime').textContent = formatSeconds(marchStartSec);
+  document.getElementById('marchArrivalTime').textContent = formatSeconds(arrivalSec);
+  document.getElementById('enemyMarchResultTime').textContent = formatMMSS(marchTimeSec);
+
+  document.getElementById('enemyMarchResult').classList.remove('hidden');
+});
+
+document.getElementById('marchCopyToEnemy').addEventListener('click', () => {
+  const time = document.getElementById('enemyMarchResultTime').textContent;
+  // "MM:SS" → "MMSS"
+  const input = document.getElementById('enemyMarchTime');
+  input.value = time.replace(':', '');
+  input.dispatchEvent(new Event('input'));
+  document.getElementById('enemyCalcSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  input.focus();
+});
+
 // ── Copy to clipboard ─────────────────────────────────────
 
 document.querySelectorAll('.btn-copy').forEach(btn => {

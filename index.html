@@ -194,8 +194,97 @@
       </div>
       <div id="enemyResult" class="enemy-result hidden">
         <p class="enemy-result-label">着弾時刻（UTC）</p>
-        <p class="enemy-result-time" id="enemyResultTime">—</p>
-        <button id="enemyCopyToTarget" class="btn btn-outline enemy-copy-btn">ターゲット時刻にセット</button>
+        <div class="enemy-result-row">
+          <p class="enemy-result-time" id="enemyResultTime">—</p>
+          <button id="enemyCopyToTarget" class="btn btn-outline enemy-copy-btn">ターゲット時刻にセット</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="enemyMarchCalcSection">
+      <h2>相手の行軍時間を算出</h2>
+
+      <div class="march-step">
+        <p class="step-label">① 行軍開始時刻</p>
+        <div class="enemy-field">
+          <label class="field-label">UTC（集結時間取得時刻）</label>
+          <div class="target-row">
+            <input
+              type="text"
+              id="marchStep1Utc"
+              class="target-input"
+              placeholder="133645"
+              maxlength="6"
+              inputmode="numeric"
+            >
+            <button id="marchStep1SetUtc" class="btn btn-set" title="4桁入力時に現在のUTC時を補完">SET</button>
+            <span class="target-preview" id="marchStep1UtcPreview">—</span>
+          </div>
+          <p class="hint">hhmmss 形式</p>
+        </div>
+        <div class="enemy-field">
+          <label class="field-label">集結時間</label>
+          <div class="mmss-row">
+            <input
+              type="text"
+              id="marchStep1Rally"
+              class="mmss-input"
+              placeholder="3000"
+              maxlength="4"
+              inputmode="numeric"
+            >
+            <span class="mmss-preview" id="marchStep1RallyPreview">—</span>
+          </div>
+          <p class="hint">mmss 形式</p>
+        </div>
+        <p class="step-result">行軍開始時刻: <span class="step-result-value" id="marchStartTime">—</span></p>
+      </div>
+
+      <div class="march-step">
+        <p class="step-label">② 到着時刻</p>
+        <div class="enemy-field">
+          <label class="field-label">UTC（行軍時間取得時刻）</label>
+          <div class="target-row">
+            <input
+              type="text"
+              id="marchStep2Utc"
+              class="target-input"
+              placeholder="133645"
+              maxlength="6"
+              inputmode="numeric"
+            >
+            <button id="marchStep2SetUtc" class="btn btn-set" title="4桁入力時に現在のUTC時を補完">SET</button>
+            <span class="target-preview" id="marchStep2UtcPreview">—</span>
+          </div>
+          <p class="hint">hhmmss 形式</p>
+        </div>
+        <div class="enemy-field">
+          <label class="field-label">行軍時間（ゲーム表示）</label>
+          <div class="mmss-row">
+            <input
+              type="text"
+              id="marchStep2March"
+              class="mmss-input"
+              placeholder="1545"
+              maxlength="4"
+              inputmode="numeric"
+            >
+            <span class="mmss-preview" id="marchStep2MarchPreview">—</span>
+          </div>
+          <p class="hint">mmss 形式</p>
+        </div>
+        <p class="step-result">到着時刻: <span class="step-result-value" id="marchArrivalTime">—</span></p>
+      </div>
+
+      <div class="calc-area">
+        <button id="enemyMarchCalculate" class="btn btn-primary">計　算</button>
+      </div>
+      <div id="enemyMarchResult" class="enemy-result hidden">
+        <p class="enemy-result-label">行軍時間</p>
+        <div class="enemy-result-row">
+          <p class="enemy-result-time" id="enemyMarchResultTime">—</p>
+          <button id="marchCopyToEnemy" class="btn btn-outline enemy-copy-btn">着弾計算へコピー</button>
+        </div>
       </div>
     </section>
   </div>
