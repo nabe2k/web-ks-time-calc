@@ -432,6 +432,79 @@ tbody tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
   display: none;
 }
 
+/* Enemy landing calc */
+#enemyCalcSection { margin-top: 32px; }
+.field-label {
+  display: block;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+.enemy-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.enemy-inputs-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.enemy-inputs-row .enemy-field {
+  flex: 1;
+  min-width: 160px;
+}
+.mmss-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mmss-input {
+  width: 100px;
+  padding: 10px 14px;
+  font-size: 1.25rem;
+  font-family: monospace;
+  letter-spacing: 2px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color .15s;
+}
+.mmss-input:focus { border-color: var(--primary); }
+.mmss-preview {
+  font-size: 1.1rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+.enemy-result {
+  margin-top: 20px;
+  text-align: center;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+}
+.enemy-result-label {
+  font-size: .8rem;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.enemy-copy-btn {
+  margin-top: 12px;
+  font-size: .85rem;
+  padding: 8px 16px;
+}
+.enemy-result-time {
+  font-size: 2rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 2px;
+}
+
 /* Mobile adjustments */
 @media (max-width: 480px) {
   .target-preview { font-size: 1.2rem; }
