@@ -449,7 +449,7 @@ document.getElementById('enemyMarchCalculate').addEventListener('click', () => {
   const utc1Val = document.getElementById('marchStep1Utc').value.replace(/\D/g, '');
   const T1 = parseHHMMSS(utc1Val.padStart(6, '0'));
   if (T1 === null || utc1Val.length !== 6) {
-    alert('①のUTC（集結開始）を正しく入力してください（例: 133645）');
+    alert('①のUTC（集結時間取得時刻）を正しく入力してください（例: 133645）');
     return;
   }
 
@@ -463,7 +463,7 @@ document.getElementById('enemyMarchCalculate').addEventListener('click', () => {
   const utc2Val = document.getElementById('marchStep2Utc').value.replace(/\D/g, '');
   const T2 = parseHHMMSS(utc2Val.padStart(6, '0'));
   if (T2 === null || utc2Val.length !== 6) {
-    alert('②のUTC（到着基準）を正しく入力してください（例: 140000）');
+    alert('②のUTC（行軍時間取得時刻）を正しく入力してください（例: 140000）');
     return;
   }
 
