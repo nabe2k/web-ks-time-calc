@@ -42,4 +42,24 @@ const HELP_CONTENT = `
       <li><strong>全消去</strong>: 全スロットのデータを一括削除</li>
     </ul>
   </section>
+
+  <section class="help-section">
+    <h3>相手の着弾時刻を計算</h3>
+    <ul>
+      <li>計算元UTC・集結時間・行軍時間を入力すると相手の着弾時刻を算出</li>
+      <li>計算式: <code>着弾時刻 = 計算元UTC + 集結時間 + 行軍時間</code></li>
+      <li><strong>ターゲット時刻にセット</strong> で算出した着弾時刻を上部の自陣計算フォームに転記</li>
+    </ul>
+  </section>
+
+  <section class="help-section">
+    <h3>相手の行軍時間を算出</h3>
+    <ul>
+      <li>ゲーム画面から読み取った情報をもとに相手の行軍時間を逆算</li>
+      <li>① UTC（集結時間取得時刻）＋ 集結時間 → 行軍開始時刻</li>
+      <li>② UTC（行軍時間取得時刻）＋ 行軍時間（ゲーム表示）→ 到着時刻</li>
+      <li>行軍時間 = 到着時刻 − 行軍開始時刻</li>
+      <li><strong>着弾計算へコピー</strong> で算出した行軍時間を相手着弾計算欄に転記</li>
+    </ul>
+  </section>
 `;
